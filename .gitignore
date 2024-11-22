@@ -1,0 +1,14 @@
+# macOS specific
+.DS_Store
+
+
+# temp files
+__pycache__/
+
+# env
+web3_env/
+web3-examples/.env
+
+# contract related
+Incrementer_abi.json
+Incrementer_bytecode.txt
