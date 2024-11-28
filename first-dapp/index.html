@@ -1,115 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-
-<style>
-  body {
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-  }
-
-  div {
-    width: 20%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  button {
-    width: 100%;
-    margin: 10px 0px 5px 0px;
-  }
-</style>
-
-</head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web3 First dApp</title>
+  </head>
   <body>
-  <div>
-    <h1>This is my dApp!</h1>
-    <p>Here we can set or get the mood:</p>
-    <label for="mood">Input Mood:</label> <br />
-    <input type="text" id="mood" />
-
-    <button onclick="getMood()">Get Mood</button>
-    <button onclick="setMood()">Set Mood</button>
-    <p id="showMood"></p>
-  </div>
-</body>
-
-<script>
+    <body>
+      <script>
+      
         var getMood
         var setMood
-</script>
+      </script>
+
+      <script type="module">
+        
+        import {
+          createWalletClient,
+          custom,
+          getContract,
+        } from "https://esm.sh/viem";
+        import { moonbaseAlpha } from "https://esm.sh/viem/chains";
+        import { privateKeyToAccount }  from "https://esm.sh/viem/accounts";
+
+        const account = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        });
+
+        //create Wallet Client
+        const walletClient = createWalletClient({
+          account,
+          chain: moonbaseAlpha,
+          transport: custom(window.ethereum),
+        });
 
 
-<script type="module">
-    import {
-        createWalletClient,
-        custom,
-        getContract,
-    } from "https://esm.sh/viem";
-    import { sepolia } from "https://esm.sh/viem/chains";
+        const accounts = await walletClient.requestAddresses();
 
-    //creating a client that connects the user's account to Ethereum Sepolia
-    const walletClient = createWalletClient({
-            chain: sepolia,
-            transport: custom(window.ethereum),
-            });
-
-    //accounts will be an array
-    const accounts = await walletClient.requestAddresses();
-
-    //get the first address in the accounts array
-    const [address] = accounts;
-
-    const MoodContractAddress = "0x10121b9a5589437e2a3b151146c5B52d7D1fFa2a";
-    const MoodContractABI = [
-	{
-		"inputs": [],
-		"name": "getMood",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_mood",
-				"type": "string"
-			}
-		],
-		"name": "setMood",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
-];
+        //get the first address in the accounts array
+        const [address] = accounts;
 
 
-const MoodContractInstance = getContract({
+        const MoodContractAddress = "";
+        const MoodContractABI = [
+      {
+        "inputs": [],
+        "name": "getMood",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_mood",
+            "type": "string"
+          }
+        ],
+        "name": "setMood",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+        const MoodContractInstance = getContract({
           address: MoodContractAddress,
           abi: MoodContractABI,
           client: walletClient,
         });
 
-getMood= async function() {
+
+        getMood= async function() {
           const mood = await MoodContractInstance.read.getMood();
           document.getElementById("showMood").innerText = `Your Mood: ${mood}`;
         }
 
-setMood= async function() {
+        setMood= async function() {
           const mood = document.getElementById("mood").value;
           await MoodContractInstance.write.setMood([mood],{
             account:address
           });
         }
+      </script>
 
-</script>
 
+
+      <div>
+        <h1>This is my dApp!</h1>
+        <p>Let us set or get the mood:</p>
+        <label for="mood">Input Mood:</label> <br />
+        <input type="text" id="mood" />
+
+        <button onclick="getMood()">Get Mood</button>
+        <button onclick="setMood()">Set Mood</button>
+        <p id="showMood"></p>
+      </div>
+    </body>
+  </body>
 </html>
